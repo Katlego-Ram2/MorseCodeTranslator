@@ -1,4 +1,4 @@
-package com.capaciti.morseCode.model;
+package com.capaciti.morse.model;
 
 public class MorseRequest {
     private String message;
