@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capaciti.morse.service.MorseCodeService;  // Correct package import
+import com.capaciti.morse.service.MorseCodeService;
 
 @RestController
 @RequestMapping("/api/morse")
