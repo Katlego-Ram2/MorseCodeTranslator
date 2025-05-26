@@ -12,6 +12,7 @@ import com.capaciti.morse.service.MorseCodeService;
  * MorseController provides REST endpoints for encoding, decoding,
  * and generating sound for Morse code.
  */
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/morse")
 public class MorseController {
@@ -32,6 +33,11 @@ public class MorseController {
         return morseCodeService.decode(code);
     }
 
+
+
+
+    @CrossOrigin(origins = "http://localhost:3000")
+
     @GetMapping("/sound")
     public ResponseEntity<byte[]> playMorseSound(@RequestParam String text) {
         byte[] audioData = morseCodeService.generateMorseAudio(text);
@@ -43,4 +49,5 @@ public class MorseController {
 
         return new ResponseEntity<>(audioData, headers, HttpStatus.OK);
     }
+
 }
