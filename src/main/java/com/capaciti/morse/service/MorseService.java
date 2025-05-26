@@ -1,23 +1,23 @@
 package com.capaciti.morse.service;
 
 import org.springframework.stereotype.Service;
+
+import javax.sound.sampled.*;
+import java.io.*;
 import java.util.*;
 
 /**
  * MorseService class provides the functionality for encoding and decoding Morse code.
- * It maintains mappings for encoding characters to Morse code and decoding Morse code back to characters.
+ * It also includes audio generation for Morse code.
  */
-@Service  // Marks this class as a Spring service (bean)
+@Service
 public class MorseService {
 
-    // Map for encoding characters to Morse code
     private static final Map<Character, String> morseMap = new HashMap<>();
-    // Map for decoding Morse code back to characters
     private static final Map<String, Character> reverseMap = new HashMap<>();
 
-    // Static block to populate the morseMap and reverseMap with character-Morse code pairs
     static {
-        // Initialize the morseMap for letters and digits
+        // Letters
         morseMap.put('A', ".-");
         morseMap.put('B', "-...");
         morseMap.put('C', "-.-.");
@@ -45,6 +45,7 @@ public class MorseService {
         morseMap.put('Y', "-.--");
         morseMap.put('Z', "--..");
 
+        // Numbers
         morseMap.put('0', "-----");
         morseMap.put('1', ".----");
         morseMap.put('2', "..---");
@@ -56,45 +57,94 @@ public class MorseService {
         morseMap.put('8', "---..");
         morseMap.put('9', "----.");
 
-        morseMap.put(' ', "/");  // Space is represented as a forward slash
+        // Space as slash
+        morseMap.put(' ', "/");
 
-        // Initialize reverseMap for decoding Morse code into characters
+        // Reverse map
         for (Map.Entry<Character, String> entry : morseMap.entrySet()) {
             reverseMap.put(entry.getValue(), entry.getKey());
         }
     }
 
-    /**
-     * Encodes a string of text into Morse code.
-     * The input text is converted to uppercase, and each character is mapped to its corresponding Morse code.
-     *
-     * @param input The input text to encode.
-     * @return A string representing the input text in Morse code.
-     */
     public String encode(String input) {
         StringBuilder result = new StringBuilder();
         for (char ch : input.toUpperCase().toCharArray()) {
-            result.append(morseMap.getOrDefault(ch, "?")).append(" "); // Use "?" for unmapped characters
+            result.append(morseMap.getOrDefault(ch, "?")).append(" ");
+        }
+        return result.toString().trim();
+    }
+
+    public String decode(String morseCode) {
+        StringBuilder result = new StringBuilder();
+        String[] words = morseCode.split(" / ");
+        for (String word : words) {
+            for (String symbol : word.split(" ")) {
+                result.append(reverseMap.getOrDefault(symbol, '?'));
+            }
+            result.append(" ");
         }
         return result.toString().trim();
     }
 
     /**
-     * Decodes a Morse code string into plain text.
-     * The input Morse code is split into words (delimited by " / ") and symbols (separated by space).
+     * Generates Morse code audio (WAV format) for a given text.
      *
-     * @param morseCode The Morse code to decode.
-     * @return A string representing the decoded plain text.
+     * @param text the plain text to convert to Morse code audio
+     * @return byte array representing WAV audio
      */
-    public String decode(String morseCode) {
-        StringBuilder result = new StringBuilder();
-        String[] words = morseCode.split(" / "); // Split words by " / "
-        for (String word : words) {
-            for (String symbol : word.split(" ")) { // Split symbols by spaces
-                result.append(reverseMap.getOrDefault(symbol, '?')); // Use "?" for unknown symbols
+    public byte[] generateMorseAudio(String text) {
+        String morse = encode(text);
+        float sampleRate = 44100;
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        try {
+            for (char c : morse.toCharArray()) {
+                switch (c) {
+                    case '.':
+                        addTone(out, sampleRate, 800, 0.1); // dot = 100 ms
+                        addSilence(out, sampleRate, 0.1);
+                        break;
+                    case '-':
+                        addTone(out, sampleRate, 800, 0.3); // dash = 300 ms
+                        addSilence(out, sampleRate, 0.1);
+                        break;
+                    case ' ':
+                        addSilence(out, sampleRate, 0.3); // inter-letter gap
+                        break;
+                    case '/':
+                        addSilence(out, sampleRate, 0.7); // inter-word gap
+                        break;
+                }
             }
-            result.append(" "); // Add space between words
+
+            byte[] audioData = out.toByteArray();
+            AudioFormat format = new AudioFormat(sampleRate, 8, 1, true, false);
+            ByteArrayInputStream bais = new ByteArrayInputStream(audioData);
+            AudioInputStream audioStream = new AudioInputStream(bais, format, audioData.length);
+
+            ByteArrayOutputStream wavOut = new ByteArrayOutputStream();
+            AudioSystem.write(audioStream, AudioFileFormat.Type.WAVE, wavOut);
+
+            return wavOut.toByteArray();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new byte[0];
         }
-        return result.toString().trim();
+    }
+
+    private void addTone(ByteArrayOutputStream out, float sampleRate, int freq, double durationSeconds) {
+        int samples = (int)(durationSeconds * sampleRate);
+        for (int i = 0; i < samples; i++) {
+            double angle = 2.0 * Math.PI * freq * i / sampleRate;
+            out.write((byte)(Math.sin(angle) * 127));  // 8-bit PCM, -128 to 127
+        }
+    }
+
+    private void addSilence(ByteArrayOutputStream out, float sampleRate, double durationSeconds) {
+        int samples = (int)(durationSeconds * sampleRate);
+        for (int i = 0; i < samples; i++) {
+            out.write(0);
+        }
     }
 }
