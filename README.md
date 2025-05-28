@@ -1,30 +1,3 @@
-# Morse Code Translator (GUI + REST API)
-
-This project is a full-featured **Morse Code Translator** built with:
-
-- 🎨 A **Java Swing GUI** for local use with sound playback.
-- 🌐 A **Spring Boot REST API** to encode/decode Morse code and return Morse audio as a `.wav` file.
-
----
-
-## 🧩 Features
-
-### GUI Application (Swing)
-- Encode plain text to Morse code.
-- Decode Morse code to plain text.
-- Play Morse code as beeps.
-- Copy/paste integration with system clipboard.
-- Stylish, responsive layout using `JFrame`.
-
-### REST API (Spring Boot)
-- `/api/morse/encode?text=...` – Encode plain text.
-- `/api/morse/decode?code=...` – Decode Morse code.
-- `/api/morse/sound?text=...` – Download Morse code as audio (`.wav`).
-
----
-
-## 📁 Project Structure
-
 
 ---
 
@@ -32,53 +5,76 @@ This project is a full-featured **Morse Code Translator** built with:
 
 ### 💻 GUI Application (Java Swing)
 
-1. Make sure you have **Java 11+** installed.
-2. Open your terminal:
+1. Ensure **Java 11+** is installed.
+2. Run from terminal:
     ```bash
     mvn clean compile
     mvn exec:java -Dexec.mainClass="com.capaciti.morse.MainFrame"
     ```
-    Alternatively, run it via your IDE (IntelliJ, Eclipse) by executing the `MainFrame` class.
+    Or run `MainFrame` from your IDE.
 
 ---
 
 ### 🌐 REST API (Spring Boot)
 
-1. Run the backend:
+1. Run backend:
     ```bash
     mvn spring-boot:run
     ```
-
-2. Access API endpoints:
+2. API endpoints:
     - Encode: [http://localhost:8080/api/morse/encode?text=HELLO](http://localhost:8080/api/morse/encode?text=HELLO)
     - Decode: [http://localhost:8080/api/morse/decode?code=.... . .-.. .-.. ---](http://localhost:8080/api/morse/decode?code=.... . .-.. .-.. ---)
-    - Download Audio: [http://localhost:8080/api/morse/sound?text=HELLO](http://localhost:8080/api/morse/sound?text=HELLO)
+    - Audio: [http://localhost:8080/api/morse/sound?text=HELLO](http://localhost:8080/api/morse/sound?text=HELLO)
+
+---
+
+### ⚛️ React Frontend
+
+1. Navigate to frontend:
+    ```bash
+    cd frontend
+    ```
+2. Install dependencies:
+    ```bash
+    npm install
+    ```
+3. Start the React app:
+    ```bash
+    npm start
+    ```
+4. Visit `http://localhost:3000` in your browser.
 
 ---
 
 ## ⚙️ Technologies Used
 
-- **Java 11+**
-- **Java Swing** for GUI
-- **Spring Boot** for REST API
-- **Maven** for dependency management
-- **Java Sound API** for audio generation
+- Java 11+
+- Java Swing (GUI)
+- Spring Boot (REST API)
+- React with Material-UI (Frontend)
+- Maven (Java dependencies)
+- Node.js / npm (Frontend dependencies)
+- Java Sound API (Audio generation)
 
 ---
 
 ## 📦 Dependencies
 
-Main dependencies are defined in `pom.xml`, including:
-
-- `spring-boot-starter-web`
-- `javax.sound.sampled` (built-in)
-- Any optional test dependencies (JUnit)
+- Backend (`pom.xml`):
+  - `spring-boot-starter-web`
+  - `javax.sound.sampled` (built-in)
+  - JUnit (optional tests)
+- Frontend (`package.json`):
+  - `@mui/material`
+  - `@mui/icons-material`
+  - `react`, `react-dom`
+  - Testing libraries (optional)
 
 ---
 
-## 🧪 Example
+## 🧪 Examples
 
-### Encode:
+### Encode via API
 ```bash
 GET /api/morse/encode?text=SOS
 # Output: ... --- ...
