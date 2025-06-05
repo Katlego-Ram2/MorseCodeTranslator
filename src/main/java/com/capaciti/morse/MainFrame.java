@@ -37,7 +37,7 @@ public class MainFrame extends JFrame {
         this.morseCodeService = morseCodeService; // Initialize the Morse code service
 
         // Set up the frame properties
-        setTitle("Morse Code Encoder / Decoder");
+        setTitle("R2-D2’s Translator");
         setSize(580, 480); // Set the size of the window
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Close application on window close
         setLocationRelativeTo(null); // Center the window on screen
